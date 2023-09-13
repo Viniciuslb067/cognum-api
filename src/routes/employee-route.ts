@@ -55,7 +55,7 @@ router.post("/employee", (async (request: Request, response: Response) => {
   }
 }) as RequestHandler);
 
-router.put("/employee/:id", (async (request: Request, response: Response) => {
+router.patch("/employee/:id", (async (request: Request, response: Response) => {
   try {
     const employee = await userService.update(request.params.id, request.body);
     successResponseHandler({ response, extraInfo: { employee } });
