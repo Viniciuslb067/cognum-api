@@ -3,6 +3,8 @@ import { Employee } from "@prisma/client";
 import axios from "axios";
 
 import EmployeeRepository from "../repositories/employee-repository";
+import { Api404Error, Api500Error } from "../util/errors";
+import { logger } from "../util/logger/logger";
 
 export default class EmployeeService {
   private employeeRepository: EmployeeRepository;
@@ -12,31 +14,66 @@ export default class EmployeeService {
   }
 
   async getById(id: string) {
-    return await this.employeeRepository.getById(id);
+    try {
+      return await this.employeeRepository.getById(id);
+    } catch (error: any) {
+      logger?.error(error);
+      throw new Api500Error(
+        `Ocorreu um erro inesperado ao tentar pegar o funcionário ${id}.`
+      );
+    }
   }
 
   async list() {
-    return await this.employeeRepository.list();
+    try {
+      return await this.employeeRepository.list();
+    } catch (error: any) {
+      logger?.error(error);
+      throw new Api500Error(
+        "Ocorreu um erro inesperado ao tentar listar os funcionários."
+      );
+    }
   }
 
   async create(data: Pick<Employee, "name"> & { role: string | null }) {
-    return await this.employeeRepository.create(data);
+    try {
+      return await this.employeeRepository.create(data);
+    } catch (error: any) {
+      logger?.error(error);
+      throw new Api500Error(
+        "Ocorreu um erro inesperado ao tentar criar o funcionário."
+      );
+    }
   }
 
   async update(id: string, data: Pick<Employee, "name" | "role">) {
-    if (!(await this.employeeRepository.getById(id))) {
-      throw new Error("Employee not found");
-    }
+    try {
+      if (!(await this.employeeRepository.getById(id))) {
+        throw new Error("Funcionário não encontrado.");
+      }
 
-    return await this.employeeRepository.update(id, data);
+      return await this.employeeRepository.update(id, data);
+    } catch (error: any) {
+      logger?.error(error);
+      throw new Api500Error(
+        "Ocorreu um erro inesperado ao tentar atualizar o funcionário."
+      );
+    }
   }
 
   async delete(id: string) {
-    if (!(await this.employeeRepository.getById(id))) {
-      throw new Error("Employee not found");
-    }
+    try {
+      if (!(await this.employeeRepository.getById(id))) {
+        throw new Api404Error("Funcionário não encontrado.");
+      }
 
-    return await this.employeeRepository.delete(id);
+      return await this.employeeRepository.delete(id);
+    } catch (error: any) {
+      logger?.error(error);
+      throw new Api500Error(
+        "Ocorreu um erro inesperado ao tentar excluir o funcionário."
+      );
+    }
   }
 
   async populate() {
@@ -58,7 +95,10 @@ export default class EmployeeService {
 
       return usersThatAreCreated;
     } catch (error: any) {
-      throw new Error("Failed to populate employees");
+      logger?.error(error);
+      throw new Api500Error(
+        "Ocorreu um erro ao tentar popular os novos funcionários."
+      );
     }
   }
 }

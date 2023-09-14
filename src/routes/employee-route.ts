@@ -20,7 +20,11 @@ router.get("/populate", (async (_, response: Response) => {
     const employees = await userService.populate();
     successResponseHandler({ response, extraInfo: { employees } });
   } catch (error: any) {
-    errorResponseHandler({ response, message: error.message });
+    errorResponseHandler({
+      response,
+      message: error.name,
+      statusCode: error.statusCode,
+    });
   }
 }) as RequestHandler);
 
@@ -28,8 +32,12 @@ router.get("/employee/:id", (async (request: Request, response: Response) => {
   try {
     const employee = await userService.getById(request.params.id);
     successResponseHandler({ response, extraInfo: { employee } });
-  } catch (error) {
-    errorResponseHandler({ response });
+  } catch (error: any) {
+    errorResponseHandler({
+      response,
+      message: error.name,
+      statusCode: error.statusCode,
+    });
   }
 }) as RequestHandler);
 
@@ -37,8 +45,12 @@ router.get("/employee", (async (_, response: Response) => {
   try {
     const employees = await userService.list();
     successResponseHandler({ response, extraInfo: { employees } });
-  } catch (error) {
-    errorResponseHandler({ response });
+  } catch (error: any) {
+    errorResponseHandler({
+      response,
+      message: error.name,
+      statusCode: error.statusCode,
+    });
   }
 }) as RequestHandler);
 
@@ -50,8 +62,12 @@ router.post("/employee", (async (request: Request, response: Response) => {
       statusCode: 201,
       extraInfo: { employee },
     });
-  } catch (error) {
-    errorResponseHandler({ response });
+  } catch (error: any) {
+    errorResponseHandler({
+      response,
+      message: error.name,
+      statusCode: error.statusCode,
+    });
   }
 }) as RequestHandler);
 
@@ -60,7 +76,11 @@ router.patch("/employee/:id", (async (request: Request, response: Response) => {
     const employee = await userService.update(request.params.id, request.body);
     successResponseHandler({ response, extraInfo: { employee } });
   } catch (error: any) {
-    errorResponseHandler({ response, message: error.message });
+    errorResponseHandler({
+      response,
+      message: error.name,
+      statusCode: error.statusCode,
+    });
   }
 }) as RequestHandler);
 
@@ -72,8 +92,12 @@ router.delete("/employee/:id", (async (
     await userService.delete(request.params.id);
 
     successResponseHandler({ response });
-  } catch (error) {
-    errorResponseHandler({ response });
+  } catch (error: any) {
+    errorResponseHandler({
+      response,
+      message: error.name,
+      statusCode: error.statusCode,
+    });
   }
 }) as RequestHandler);
 
